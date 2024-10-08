@@ -1,0 +1,53 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_tags %}
+
+{% block title %}
+Posts
+{% endblock title %}
+
+{% block content %}
+        {% if user.is_authenticated %}
+        <h2>Пользователь: {{user}}</h2>
+        <button><a href="accounts/logout/">Выйти</a></button>
+        {% endif %}
+       <form action="" method="get">
+       {{ filterset.form.as_p }}
+       <input type="submit" value="Найти" />
+       </form>
+    {% for post in posts %}
+         <h3>{{ post.title }}</h3>
+         <p>{{ post.time_in|date:"j E Y" }}</p>
+         <p>{{ post.text|safe }}</p>
+         <button> <a href="{%url 'post' post.id %}">Подробнее...</a> </button>
+    {% endfor %}
+    {% if page_obj.has_previous %}
+       {# Для каждой ссылки пагинации указываем обработку через новый тег #}
+       <a href="?{% url_replace page=1 %}">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {{ page_obj.number }}
+
+   {% if page_obj.has_next %}
+       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+    {% if user.is_authenticated %}
+    {% if user.author %}
+        <button><a href="{%url 'post_create' %}">Создать пост</a></button>
+    {% else %}
+        <form action="{% url 'become_author' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Стать автором</button>
+        </form>
+    {% endif %}
+{% endif %}
+
+{% endblock content %}

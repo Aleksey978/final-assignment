@@ -1,0 +1,24 @@
+{% extends 'flatpages/default.html' %}
+
+{% load static %}
+
+{% block title %}
+Post create
+{% endblock title %}
+
+{% block content %}
+ <div class="container">
+        <h1>{% if request.path == '/create/' %}
+                Создание поста
+            {% elif request.resolver_match.url_name == 'post_update' %}
+                Редоктирование поста
+            {% endif %}
+        </h1>
+        {{ form.media }}
+        <form method="post"  enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Сохранить изменения</button>
+        </form>
+    </div>
+{% endblock content %}

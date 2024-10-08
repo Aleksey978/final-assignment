@@ -1,0 +1,22 @@
+{% extends 'flatpages/default.html' %}
+
+
+
+{% block title %}
+Post
+{% endblock title %}
+
+{% block content %}
+<p>{{ post.author.user }}</p>
+<p>{{ user }}</p>
+<h1>{{ post.title }}</h1>
+<p>{{ post.text|safe }}</p>
+<p>{{ post.time_in}}</p>
+{% if post.image %}
+{% endif %}
+
+{% if user == post.author.user %}
+<button><a href="{% url 'post_update' post.id %}">Изменить</a></button>
+<button><a href="{% url 'post_delete' post.id %}">Удалить</a></button>
+{% endif %}
+{% endblock content %}
