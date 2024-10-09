@@ -1,11 +1,13 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 
 from .filters import PostFilter
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from .models import Post, Author
 
 
@@ -41,6 +43,7 @@ def post_create(request):
 
 
 class PostDetail(LoginRequiredMixin, DetailView):
+    form_class = CommentForm
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
@@ -52,22 +55,27 @@ class PostDetail(LoginRequiredMixin, DetailView):
         return context
 
 
-class PostUpdate(UpdateView):
+class PostUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = PostForm
     model = Post
     template_name = 'post_edit.html'
+    permission_required = 'news_portal.update_post'
 
     def get_success_url(self):
         return reverse_lazy('post', kwargs={'pk': self.object.pk})
 
-class PostDelete(DeleteView):
+class PostDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
     template_name = 'post_delete.html'
+    permission_required = 'news_portal.delete_post'
 
     def get_success_url(self):
         return reverse_lazy('post_list')
-
+@login_required
 def become_author(request):
-    if request.user.is_authenticated and not hasattr(request.user, 'author'):
-        Author.objects.create(user=request.user)
-    return redirect('post_list')
+    user = request.user
+    authors_group = Group.objects.get(name='authors')
+    if not request.user.groups.filter(name='authors').exists():
+        authors_group.user_set.add(user)
+        Author.objects.create(user=user)
+    return redirect('/')

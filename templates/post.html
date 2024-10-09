@@ -1,6 +1,6 @@
 {% extends 'flatpages/default.html' %}
 
-
+{% load custom_tags %}
 
 {% block title %}
 Post
@@ -12,9 +12,11 @@ Post
 <h1>{{ post.title }}</h1>
 <p>{{ post.text|safe }}</p>
 <p>{{ post.time_in}}</p>
-{% if post.image %}
-{% endif %}
-
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Отправить</button>
+        </form>
 {% if user == post.author.user %}
 <button><a href="{% url 'post_update' post.id %}">Изменить</a></button>
 <button><a href="{% url 'post_delete' post.id %}">Удалить</a></button>

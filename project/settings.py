@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'ckeditor'
+    'ckeditor',
+    # 'django.contrib.sites',
 
 ]
 
@@ -114,6 +115,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+
+
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -154,12 +160,26 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = '/accounts/login/'
 
 LOGIN_REDIRECT_URL = '/'
+# DEFAULT_FROM_EMAIL = 'aleksei.tchetvyorkin@yandex.ru'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'aleksei.tchetvyorkin'
+EMAIL_HOST_PASSWORD = 'ksxyxiwnolvhlxnh'
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
 
 CKEDITOR_CONFIGS = {
     'default': {

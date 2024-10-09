@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-
+from  ckeditor.fields import RichTextField
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -20,7 +20,7 @@ class Category(models.Model):
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=255)
-    text = models.TextField()
+    text = RichTextField()
     time_in = models.DateTimeField(auto_now_add=True)
     category = models.ManyToManyField(Category, through='PostCategory')
 
