@@ -1,0 +1,31 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+<h1>Ваши посты и комментарии</h1>
+
+{% for post in posts %}
+    <div class="post">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.content }}</p>
+        <p>Автор: {{ post.author }}</p>
+        <p>Дата создания: {{ post.time_in }}</p>
+
+        <h3>Комментарии:</h3>
+        <ul>
+            {% for comment in post.comments.all %}
+                <li>{{ comment.text }}</li>
+            <button><a href="{% url 'comment_delete' comment.id %}">Удалить</a></button>
+            {% if not comment.accept %}
+                    <form action="{% url 'accept_comment' comment.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Accept</button>
+                    </form>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+{% empty %}
+    <p>У вас нет постов.</p>
+{% endfor %}
+
+{% endblock %}

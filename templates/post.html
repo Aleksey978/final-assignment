@@ -12,6 +12,26 @@ Post
 <h1>{{ post.title }}</h1>
 <p>{{ post.text|safe }}</p>
 <p>{{ post.time_in}}</p>
+<h3>Accepted Comments:</h3>
+<ul>
+    {% for comment in accepted_comments %}
+        <li>{{ comment.text }} - by {{ comment.created_by.username }}</li>
+    {% endfor %}
+</ul>
+
+{% if user.is_authenticated %}
+    <h3>Your Comments:</h3>
+    <ul>
+        {% for comment in user_comments %}
+            <li>
+                {{ comment.text }} - by {{ comment.created_by.username }}
+                {% if not comment.accept %}
+                    (Not accepted)
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
         <form action="" method="post">
             {% csrf_token %}
             {{ form.as_p }}
