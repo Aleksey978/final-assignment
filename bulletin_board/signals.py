@@ -12,11 +12,17 @@ from_email = settings.DEFAULT_FROM_EMAIL
 def notify_managers_appointment(sender, instance, created, **kwargs):
     send_mail(
         subject=f'Пользователь {instance.created_by} оставил отклик',
-        # имя клиента и дата записи будут в теме для удобства
-        message=f'На вашу запись "{instance.post.title}" оставил отклик: "{instance.text}"',  # сообщение с кратким описанием проблемы
-        from_email=from_email,  # здесь указываете почту, с которой будете отправлять (об этом попозже)
-        recipient_list=[instance.author.user.email]  # здесь список получателей. Например, секретарь, сам врач и т. д.
+        message=f'На вашу запись "{instance.post.title}" оставил отклик: "{instance.text}"',
+        from_email=from_email,
+        recipient_list=[instance.author.user.email]
     )
-    # print(instance.author.user.email)
-    # print(created)
-    # print(**kwargs)
+
+@receiver(post_save, sender=Comment)
+def perform_action_on_comment_accept(sender, instance, **kwargs):
+    if instance.accept and kwargs.get('created', False) is False:
+        send_mail(
+            subject=f'Ваш отклик {instance.text} приинят автором',
+            message=f'Оклик {instance.text} к записи  "{instance.post.title}" принят автором',
+            from_email=from_email,
+            recipient_list=[instance.created_by.email]
+        )
